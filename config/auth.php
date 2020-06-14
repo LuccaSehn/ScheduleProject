@@ -38,13 +38,13 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'users'
         ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
-            'hash' => true,
+            'hash' => false
         ],
     ],
 
