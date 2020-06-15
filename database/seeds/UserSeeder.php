@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
-            'api_token' => Str::random(60)
+            'api_token' => 'kP6g4NQ7wkxXo31xqzjJ1lmoc71RnZNEu8XZSTzjU2bVmuqdWRo2gzUsI1dI'
         ]);
     }
 }
