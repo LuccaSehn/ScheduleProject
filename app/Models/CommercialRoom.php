@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Clients extends Model
+class CommercialRoom extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'email', 'phone'];
+    protected $fillable = ['name', 'capacity'];
     protected $guarded = ['id', 'created_at', 'update_at', 'deleted_at'];
-    protected $table = 'clients';
+    protected $table = 'commercial_room';
 
     public function schedules()
     {

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SchedulesRequest;
-use App\Models\Schedules;
+use App\Http\Requests\CommercialRoomRequest;
+use App\Models\CommercialRoom;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
-class SchedulesController extends Controller
+class CommercialRoomController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +19,7 @@ class SchedulesController extends Controller
      */
     public function index()
     {
-        return Schedules::with('client', 'commercialRoom')->paginate(10);
+        return CommercialRoom::with('schedules')->paginate(10);
     }
 
     /**
@@ -34,24 +35,16 @@ class SchedulesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param SchedulesRequest $request
+     * @param CommercialRoomRequest $request
      * @return JsonResponse
      */
-    public function store(SchedulesRequest $request)
+    public function store(CommercialRoomRequest $request)
     {
         DB::beginTransaction();
         try {
-            $checkDay = Schedules::where([
-                ['schedule_date', $request->schedule_date],
-                ['commercial_room_id', $request->commercial_room_id]
-            ])->get();
-            if (count($checkDay) > 0) {
-                return response()->json(['message' => 'Sala já agendada nesse dia'], 201);
-            } else {
-                $schedule = Schedules::create($request->all());
-                DB::commit();
-                return response()->json($schedule, 201);
-            }
+            $commercialRoom = CommercialRoom::create($request->all());
+            DB::commit();
+            return response()->json($commercialRoom, 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json($e->getMessage(), 500);
@@ -67,7 +60,7 @@ class SchedulesController extends Controller
     public function show($id)
     {
         try {
-            return response()->json(Schedules::with('clients', 'commercialRoom')->findOrFail($id), 200);
+            return response()->json(CommercialRoom::with('schedules')->findOrFail($id), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -89,26 +82,18 @@ class SchedulesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param SchedulesRequest $request
+     * @param CommercialRoomRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(SchedulesRequest $request, $id)
+    public function update(CommercialRoomRequest $request, $id)
     {
         DB::beginTransaction();
         try {
-            $checkDay = Schedules::where([
-                ['schedule_date', $request->schedule_date],
-                ['commercial_room_id', $request->commercial_room_id]
-            ])->get();
-            if (count($checkDay) > 0) {
-                return response()->json(['message' => 'Sala já agendada nesse dia'], 201);
-            } else {
-                $schedule = Schedules::findOrFail($id);
-                $schedule->fill($request->all())->save();
-                DB::commit();
-                return response()->json($schedule, 201);
-            }
+            $commercialRoom = CommercialRoom::findOrFail($id);
+            $commercialRoom->fill($request->all())->save();
+            DB::commit();
+            return response()->json($commercialRoom, 200);
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             return response()->json($e->getMessage(), 404);
@@ -127,8 +112,8 @@ class SchedulesController extends Controller
     public function destroy($id)
     {
         try {
-            $client = Schedules::findOrFail($id);
-            $client->delete();
+            $commercialRoom = CommercialRoom::findOrFail($id);
+            $commercialRoom->delete();
             return response()->json('success', 204);
         } catch (ModelNotFoundException $e) {
             DB::rollback();

@@ -17,4 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::resource('clients', 'ClientsController');
+    Route::resource('commercial_room', 'CommercialRoomController');
+    Route::resource('schedules', 'SchedulesController');
 });

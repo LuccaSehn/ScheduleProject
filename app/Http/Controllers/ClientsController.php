@@ -59,7 +59,7 @@ class ClientsController extends Controller
     public function show($id)
     {
         try {
-            return response()->json(Clients::findOrFail($id), 200);
+            return response()->json(Clients::with('schedules')->findOrFail($id), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -92,6 +92,7 @@ class ClientsController extends Controller
             $client = Clients::findOrFail($id);
             $client->fill($request->all())->save();
             DB::commit();
+            return response()->json($client, 200);
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             return response()->json($e->getMessage(), 404);
